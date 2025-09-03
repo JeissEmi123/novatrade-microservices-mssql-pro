@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rest-web</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.catalog.api</a> &gt; <span class="el_source">HomeController.java</span></div><h1>HomeController.java</h1><pre class="source lang-java linenums">package com.novatrade.catalog.api;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Controlador para manejar la ruta raíz y proporcionar información básica sobre la API
+ */
+@Controller
+<span class="nc" id="L14">public class HomeController {</span>
+
+    /**
+     * Endpoint para la ruta raíz que devuelve información básica sobre la API
+     * @return Información sobre la API en formato JSON
+     */
+    @GetMapping(&quot;/&quot;)
+    @ResponseBody
+    public Map&lt;String, Object&gt; home() {
+<span class="nc" id="L23">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L24">        Map&lt;String, String&gt; links = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L26">        links.put(&quot;products&quot;, &quot;/api/v1/products&quot;);</span>
+<span class="nc" id="L27">        links.put(&quot;swagger&quot;, &quot;/swagger-ui.html&quot;);</span>
+
+<span class="nc" id="L29">        response.put(&quot;name&quot;, &quot;Novatrade Catalog API&quot;);</span>
+<span class="nc" id="L30">        response.put(&quot;version&quot;, &quot;1.0.0&quot;);</span>
+<span class="nc" id="L31">        response.put(&quot;status&quot;, &quot;online&quot;);</span>
+<span class="nc" id="L32">        response.put(&quot;endpoints&quot;, links);</span>
+
+<span class="nc" id="L34">        return response;</span>
+    }
+
+    /**
+     * Redirige a los usuarios a la ruta API principal si acceden a /api
+     */
+    @GetMapping(&quot;/api&quot;)
+    @ResponseBody
+    public Map&lt;String, Object&gt; api() {
+<span class="nc" id="L43">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L44">        response.put(&quot;message&quot;, &quot;Bienvenido a la API de Novatrade Catalog&quot;);</span>
+<span class="nc" id="L45">        response.put(&quot;version&quot;, &quot;v1&quot;);</span>
+<span class="nc" id="L46">        response.put(&quot;endpoints&quot;, Map.of(&quot;products&quot;, &quot;/api/v1/products&quot;));</span>
+
+<span class="nc" id="L48">        return response;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

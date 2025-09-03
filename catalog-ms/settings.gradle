@@ -1,0 +1,2 @@
+rootProject.name = "catalog-ms"
+include(":model", ":usecase", ":infrastructure:entry-points:rest-web", ":infrastructure:driven-adapters:sqlserver-jpa", ":applications:app-service")

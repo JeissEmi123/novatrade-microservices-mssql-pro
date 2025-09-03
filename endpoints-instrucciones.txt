@@ -1,0 +1,94 @@
+GUÍA PARA EJECUTAR LOS ENDPOINTS DEL PROYECTO NOVATRADE
+
+Este documento proporciona instrucciones sobre cómo ejecutar los endpoints disponibles en el proyecto. Puedes usar herramientas como Postman, cURL o cualquier cliente HTTP.
+
+=============================================
+MICROSERVICIO DE CATÁLOGO (puerto 8081)
+=============================================
+
+1. CREAR UN NUEVO PRODUCTO
+   Método: POST
+   URL: http://localhost:8081/api/v1/products
+   Headers:
+     - Content-Type: application/vnd.api+json
+   Body:
+   {
+     "data": {
+       "type": "products",
+       "attributes": {
+         "name": "Teclado",
+         "price": 199.99,
+         "description": "Switches azules"
+       }
+     }
+   }
+
+2. OBTENER UN PRODUCTO POR ID
+   Método: GET
+   URL: http://localhost:8081/api/v1/products/1
+   Headers:
+     - Accept: application/vnd.api+json
+
+3. LISTAR TODOS LOS PRODUCTOS
+   Método: GET
+   URL: http://localhost:8081/api/v1/products
+   Headers:
+     - Accept: application/vnd.api+json
+
+=============================================
+MICROSERVICIO DE INVENTARIO (puerto 8082)
+=============================================
+
+1. OBTENER INVENTARIO DE UN PRODUCTO
+   Método: GET
+   URL: http://localhost:8082/api/v1/inventory/1
+   Headers:
+     - Accept: application/vnd.api+json
+
+2. ACTUALIZAR INVENTARIO DE UN PRODUCTO
+   Método: PATCH
+   URL: http://localhost:8082/api/v1/inventory/1
+   Headers:
+     - Content-Type: application/vnd.api+json
+   Body:
+   {
+     "data": {
+       "type": "inventory",
+       "attributes": {
+         "quantity": 10
+       }
+     }
+   }
+
+3. REALIZAR UNA COMPRA
+   Método: POST
+   URL: http://localhost:8082/api/v1/purchases
+   Headers:
+     - Content-Type: application/vnd.api+json
+     - Idempotency-Key: demo-123 (opcional, para evitar compras duplicadas)
+   Body:
+   {
+     "data": {
+       "type": "purchases",
+       "attributes": {
+         "productId": 1,
+         "quantity": 2
+       }
+     }
+   }
+
+=============================================
+NOTAS IMPORTANTES
+=============================================
+
+1. Asegúrate de que los microservicios estén ejecutándose antes de intentar acceder a los endpoints.
+
+2. El formato de respuesta de todos los endpoints es JSON:API (application/vnd.api+json).
+
+3. Para probar los endpoints de inventario, primero debes:
+   - Crear al menos un producto en el servicio de catálogo
+   - Establecer el inventario para ese producto
+   - Usar el ID del producto creado en las operaciones de inventario y compras
+
+4. Puedes importar la colección de Postman ubicada en:
+   C:\Users\jeiss\OneDrive\Desktop\novatrade-microservices-mssql-pro\docs\postman_collection.json

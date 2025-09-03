@@ -1,0 +1,26 @@
+dependencies {
+    implementation project(":model")
+    implementation project(":usecase")
+
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-validation"
+
+    // Dependencias para pruebas
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.10.2"
+    testImplementation "org.mockito:mockito-core:5.12.0"
+    testImplementation "org.mockito:mockito-junit-jupiter:5.12.0"
+    testImplementation "org.springframework:spring-test"
+    testImplementation "com.fasterxml.jackson.core:jackson-databind"
+    testImplementation "org.hamcrest:hamcrest-all:1.3"
+}
+
+// Configuración para preservar los nombres de parámetros durante la compilación
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-parameters'
+}
+
+test {
+    useJUnitPlatform()
+}

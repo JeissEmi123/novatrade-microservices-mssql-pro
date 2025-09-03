@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.novatrade.catalog.api.JsonApiErrorHandlerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2025-09-03T21:06:51.072Z" hostname="CASACAMARGO" time="0.324">
+  <properties/>
+  <testcase name="handleNotFound_debeRetornarEstadoNotFound()" classname="com.novatrade.catalog.api.JsonApiErrorHandlerTest" time="0.29"/>
+  <testcase name="handleValidationErrors_debeRetornarEstadoBadRequest()" classname="com.novatrade.catalog.api.JsonApiErrorHandlerTest" time="0.003"/>
+  <testcase name="handleBadRequest_debeRetornarEstadoBadRequest()" classname="com.novatrade.catalog.api.JsonApiErrorHandlerTest" time="0.011"/>
+  <testcase name="handleGenericException_debeRetornarEstadoInternalServerError()" classname="com.novatrade.catalog.api.JsonApiErrorHandlerTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

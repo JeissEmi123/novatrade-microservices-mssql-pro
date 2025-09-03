@@ -1,0 +1,94 @@
+{
+  "info": {
+    "name": "Novatrade MSSQL Microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Product",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/vnd.api+json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/api/v1/products",
+          "host": [
+            "http://localhost:8081"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "products"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"data\":{\"type\":\"products\",\"attributes\":{\"name\":\"Teclado\",\"price\":199.99,\"description\":\"Switches azules\"}}}"
+        }
+      }
+    },
+    {
+      "name": "Set Inventory",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/vnd.api+json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/api/v1/inventory/1",
+          "host": [
+            "http://localhost:8082"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "inventory",
+            "1"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"data\":{\"type\":\"inventory\",\"attributes\":{\"quantity\":10}}}"
+        }
+      }
+    },
+    {
+      "name": "Purchase",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/vnd.api+json"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "demo-123"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8082/api/v1/purchases",
+          "host": [
+            "http://localhost:8082"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "purchases"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"data\":{\"type\":\"purchases\",\"attributes\":{\"productId\":1,\"quantity\":2}}}"
+        }
+      }
+    }
+  ]
+}

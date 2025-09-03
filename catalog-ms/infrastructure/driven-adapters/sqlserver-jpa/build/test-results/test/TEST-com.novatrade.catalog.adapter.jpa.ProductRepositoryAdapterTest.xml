@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-09-03T18:40:30.203Z" hostname="CASACAMARGO" time="3.448">
+  <properties/>
+  <testcase name="toEntity_WithNullDescription_ShouldHandleNullDescription()" classname="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" time="3.39"/>
+  <testcase name="findById_WhenProductDoesNotExist_ShouldReturnEmptyOptional()" classname="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" time="0.022"/>
+  <testcase name="save_ShouldSaveProductAndReturnDomainObject()" classname="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" time="0.018"/>
+  <testcase name="findAll_ShouldReturnAllProducts()" classname="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" time="0.007"/>
+  <testcase name="findById_WhenProductExists_ShouldReturnProduct()" classname="com.novatrade.catalog.adapter.jpa.ProductRepositoryAdapterTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

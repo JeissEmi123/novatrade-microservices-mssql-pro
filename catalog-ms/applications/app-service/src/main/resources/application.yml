@@ -1,0 +1,55 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    # Configuración para usar localhost en lugar de host.docker.internal
+    url: jdbc:sqlserver://localhost:11433;databaseName=master;encrypt=false;trustServerCertificate=true;
+    username: sa
+    password: YourStrong!Passw0rd
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    # Configuración mejorada de Hikari para más robustez y tiempos de espera más cortos
+    hikari:
+      connection-timeout: 30000  # Reducido a 30 segundos para no bloquear tanto tiempo
+      maximum-pool-size: 5
+      minimum-idle: 1
+      validation-timeout: 5000  # Reducido para fallar más rápido si hay problemas
+      connection-test-query: SELECT 1
+  jpa:
+    database-platform: org.hibernate.dialect.SQLServerDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    # Esto permite que la aplicación inicie incluso sin conexión a BD
+    defer-datasource-initialization: true
+  flyway:
+    enabled: false
+  # Configuración para permitir fallos de conexión a la BD
+  sql:
+    init:
+      continue-on-error: true
+
+  # Añadimos fail-fast en false para que la aplicación inicie incluso si la BD no está disponible
+  datasource.tomcat.test-on-borrow: true
+  main:
+    web-application-type: servlet
+    allow-bean-definition-overriding: true
+    fail-fast: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.zaxxer.hikari: DEBUG
+    com.microsoft.sqlserver: DEBUG  # Añadimos para ver más detalles de SQL Server
+  pattern:
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger - %msg%n"

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlserver-jpa</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.catalog.adapter.jpa</a> &gt; <span class="el_source">ProductRepositoryAdapter.java</span></div><h1>ProductRepositoryAdapter.java</h1><pre class="source lang-java linenums">package com.novatrade.catalog.adapter.jpa;
+
+import com.novatrade.catalog.model.Product;
+import com.novatrade.catalog.model.ports.ProductRepositoryPort;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+
+@Component
+public class ProductRepositoryAdapter implements ProductRepositoryPort {
+
+    private final ProductJpaRepository repository;
+
+<span class="fc" id="L15">    public ProductRepositoryAdapter(ProductJpaRepository repository) {</span>
+<span class="fc" id="L16">        this.repository = repository;</span>
+<span class="fc" id="L17">    }</span>
+
+    @Override
+    public Product save(Product product) {
+<span class="fc" id="L21">        return toDomain(repository.save(toEntity(product)));</span>
+    }
+
+    @Override
+    public Optional&lt;Product&gt; findById(Long id) {
+<span class="fc" id="L26">        return repository.findById(id).map(this::toDomain);</span>
+    }
+
+    @Override
+    public List&lt;Product&gt; findAll() {
+<span class="fc" id="L31">        return repository.findAll().stream()</span>
+<span class="fc" id="L32">                .map(this::toDomain)</span>
+<span class="fc" id="L33">                .toList();</span>
+    }
+
+    private Product toDomain(ProductEntity entity) {
+<span class="fc" id="L37">        return Product.builder()</span>
+<span class="fc" id="L38">                .id(entity.getId())</span>
+<span class="fc" id="L39">                .name(entity.getName())</span>
+<span class="fc" id="L40">                .price(entity.getPrice())</span>
+<span class="fc" id="L41">                .description(Optional.ofNullable(entity.getDescription()))</span>
+<span class="fc" id="L42">                .build();</span>
+    }
+
+    private ProductEntity toEntity(Product product) {
+<span class="fc" id="L46">        ProductEntity entity = new ProductEntity();</span>
+<span class="fc" id="L47">        entity.setId(product.getId());</span>
+<span class="fc" id="L48">        entity.setName(product.getName());</span>
+<span class="fc" id="L49">        entity.setPrice(product.getPrice());</span>
+<span class="fc" id="L50">        entity.setDescription(product.getDescription().orElse(null));</span>
+<span class="fc" id="L51">        return entity;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

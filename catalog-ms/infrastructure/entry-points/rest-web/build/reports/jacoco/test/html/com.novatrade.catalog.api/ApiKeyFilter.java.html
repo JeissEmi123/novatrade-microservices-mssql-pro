@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiKeyFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rest-web</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.catalog.api</a> &gt; <span class="el_source">ApiKeyFilter.java</span></div><h1>ApiKeyFilter.java</h1><pre class="source lang-java linenums">package com.novatrade.catalog.api;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+
+/**
+ * Filtro para validar la API key en las peticiones entrantes
+ */
+@Component
+public class ApiKeyFilter extends OncePerRequestFilter {
+
+    private static final String API_KEY_HEADER = &quot;X-API-KEY&quot;;
+    private static final String ENV_API_KEY = &quot;CATALOG_API_KEY&quot;;
+    private static final String CONTENT_TYPE = &quot;application/vnd.api+json&quot;;
+
+    private final String expectedApiKey;
+
+    /**
+     * Constructor por defecto que obtiene la API key de las variables de entorno
+     */
+    public ApiKeyFilter() {
+<span class="nc" id="L28">        this(System.getenv().getOrDefault(ENV_API_KEY, &quot;&quot;));</span>
+<span class="nc" id="L29">    }</span>
+
+    /**
+     * Constructor para pruebas unitarias que permite inyectar la API key esperada
+     * @param expectedApiKey La API key esperada
+     */
+<span class="nc" id="L35">    public ApiKeyFilter(String expectedApiKey) {</span>
+<span class="nc" id="L36">        this.expectedApiKey = expectedApiKey;</span>
+<span class="nc" id="L37">    }</span>
+
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+<span class="nc" id="L45">        String providedApiKey = request.getHeader(API_KEY_HEADER);</span>
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (isInvalidApiKey(providedApiKey)) {</span>
+<span class="nc" id="L48">            sendUnauthorizedResponse(response);</span>
+<span class="nc" id="L49">            return;</span>
+        }
+
+<span class="nc" id="L52">        filterChain.doFilter(request, response);</span>
+<span class="nc" id="L53">    }</span>
+
+    /**
+     * Verifica si la API key proporcionada es inválida
+     * @param providedApiKey La API key proporcionada en la petición
+     * @return true si la API key es inválida, false en caso contrario
+     */
+    private boolean isInvalidApiKey(String providedApiKey) {
+<span class="nc bnc" id="L61" title="All 6 branches missed.">        return providedApiKey != null &amp;&amp; !providedApiKey.isBlank() &amp;&amp; !providedApiKey.equals(expectedApiKey);</span>
+    }
+
+    /**
+     * Envía una respuesta de error 401 Unauthorized
+     * @param response El objeto HttpServletResponse
+     * @throws IOException Si ocurre un error al escribir la respuesta
+     */
+    private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
+<span class="nc" id="L70">        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</span>
+<span class="nc" id="L71">        response.setContentType(CONTENT_TYPE);</span>
+<span class="nc" id="L72">        response.getWriter().write(</span>
+                &quot;{\&quot;errors\&quot;:[{\&quot;status\&quot;:\&quot;401\&quot;,\&quot;title\&quot;:\&quot;Unauthorized\&quot;,\&quot;detail\&quot;:\&quot;Invalid API key\&quot;}]}&quot;);
+<span class="nc" id="L74">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

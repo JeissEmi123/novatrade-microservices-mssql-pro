@@ -1,0 +1,49 @@
+# Archivos compilados y directorios de construcción
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Directorios específicos de construcción
+/build/
+*/build/
+*/*/build/
+*/*/*/build/
+
+# Directorios de Gradle
+.gradle/
+*/gradle/
+*/*/gradle/
+
+# Configuración de IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Configuración de Eclipse
+.settings/
+.project
+.classpath
+bin/
+
+# Configuración de VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos específicos de SQL Server
+*.mdf
+*.ldf
+
+# Archivos temporales

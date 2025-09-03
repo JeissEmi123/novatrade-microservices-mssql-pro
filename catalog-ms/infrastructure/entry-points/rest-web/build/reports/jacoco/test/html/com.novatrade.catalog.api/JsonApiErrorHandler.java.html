@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonApiErrorHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rest-web</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.catalog.api</a> &gt; <span class="el_source">JsonApiErrorHandler.java</span></div><h1>JsonApiErrorHandler.java</h1><pre class="source lang-java linenums">package com.novatrade.catalog.api;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * Controlador global de excepciones que convierte las excepciones en respuestas JSON API compatibles.
+ */
+@RestControllerAdvice
+<span class="fc" id="L17">public class JsonApiErrorHandler {</span>
+
+    /**
+     * Representa un error individual en formato JSON API
+     */
+<span class="fc" id="L22">    record JsonApiError(String status, String title, String detail) {}</span>
+
+    /**
+     * Colección de errores según la especificación JSON API
+     */
+<span class="fc" id="L27">    record Errors(List&lt;JsonApiError&gt; errors) {}</span>
+
+    /**
+     * Media type constante para JSON API
+     */
+<span class="fc" id="L32">    private static final MediaType JSON_API_MEDIA_TYPE = MediaType.valueOf(&quot;application/vnd.api+json&quot;);</span>
+
+    /**
+     * Método auxiliar para crear una respuesta de error
+     */
+    private ResponseEntity&lt;Errors&gt; createErrorResponse(HttpStatus status, String title, String detail) {
+<span class="fc" id="L38">        return ResponseEntity</span>
+<span class="fc" id="L39">                .status(status)</span>
+<span class="fc" id="L40">                .contentType(JSON_API_MEDIA_TYPE)</span>
+<span class="fc" id="L41">                .body(new Errors(List.of(new JsonApiError(</span>
+<span class="fc" id="L42">                        String.valueOf(status.value()),</span>
+                        title,
+                        detail
+                ))));
+    }
+
+    /**
+     * Maneja excepciones de argumento ilegal (400 Bad Request)
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity&lt;Errors&gt; handleBadRequest(IllegalArgumentException ex) {
+<span class="fc" id="L53">        return createErrorResponse(HttpStatus.BAD_REQUEST, &quot;Bad Request&quot;, ex.getMessage());</span>
+    }
+
+    /**
+     * Maneja excepciones de elemento no encontrado (404 Not Found)
+     */
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity&lt;Errors&gt; handleNotFound(NoSuchElementException ex) {
+<span class="fc" id="L61">        return createErrorResponse(HttpStatus.NOT_FOUND, &quot;Not Found&quot;, ex.getMessage());</span>
+    }
+
+    /**
+     * Maneja excepciones de validación de argumentos (400 Bad Request)
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity&lt;Errors&gt; handleValidationErrors(MethodArgumentNotValidException ex) {
+<span class="fc" id="L69">        return createErrorResponse(</span>
+                HttpStatus.BAD_REQUEST,
+                &quot;Validation Error&quot;,
+                &quot;Error de validación en los datos enviados&quot;
+        );
+    }
+
+    /**
+     * Maneja cualquier otra excepción no controlada (500 Internal Server Error)
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity&lt;Errors&gt; handleGenericException(Exception ex) {
+<span class="fc" id="L81">        return createErrorResponse(</span>
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                &quot;Internal Server Error&quot;,
+                &quot;Se produjo un error interno en el servidor&quot;
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

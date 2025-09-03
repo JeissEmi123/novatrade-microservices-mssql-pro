@@ -1,0 +1,18 @@
+apply plugin: "org.springframework.boot"
+
+dependencies {
+    implementation project(":model")
+    implementation project(":usecase")
+    implementation project(":infrastructure:entry-points:rest-web")
+    implementation project(":infrastructure:driven-adapters:sqlserver-jpa")
+
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('bootJar') {
+    mainClass = 'com.novatrade.catalog.Application'
+    archiveFileName = 'app-service.jar'
+}

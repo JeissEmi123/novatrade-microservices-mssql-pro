@@ -1,0 +1,229 @@
+openapi: 3.0.3
+info:
+  title: Novatrade Inventario API
+  description: API para la gestión del inventario de productos de Novatrade
+  version: 1.0.0
+  contact:
+    name: Equipo Novatrade
+servers:
+  - url: http://localhost:8081
+    description: Servidor local
+tags:
+  - name: inventario
+    description: Operaciones con el inventario de productos
+  - name: compras
+    description: Operaciones de compra de productos
+
+paths:
+  /api/v1/inventory/{productId}:
+    get:
+      tags:
+        - inventario
+      summary: Consultar inventario de un producto
+      description: Obtiene la cantidad disponible en inventario para un producto específico
+      operationId: getInventory
+      parameters:
+        - name: productId
+          in: path
+          description: ID del producto
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Inventario encontrado
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InventoryResponse'
+        '401':
+          description: No autorizado
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor
+
+    patch:
+      tags:
+        - inventario
+      summary: Actualizar inventario de un producto
+      description: Actualiza la cantidad disponible en inventario para un producto específico
+      operationId: setInventory
+      parameters:
+        - name: productId
+          in: path
+          description: ID del producto
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Nueva cantidad de inventario
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/InventoryRequest'
+      responses:
+        '200':
+          description: Inventario actualizado correctamente
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/InventoryResponse'
+        '400':
+          description: Datos de inventario inválidos
+        '401':
+          description: No autorizado
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /api/v1/purchases:
+    post:
+      tags:
+        - compras
+      summary: Realizar una compra de producto
+      description: Procesa la compra de una cantidad específica de un producto
+      operationId: purchaseProduct
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          description: Clave de idempotencia para evitar duplicidad en transacciones
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: Información de la compra
+        required: true
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequest'
+      responses:
+        '200':
+          description: Compra realizada correctamente
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/PurchaseResponse'
+        '400':
+          description: Datos de compra inválidos o inventario insuficiente
+        '401':
+          description: No autorizado
+        '404':
+          description: Producto no encontrado
+        '500':
+          description: Error interno del servidor
+
+components:
+  schemas:
+    InventoryRequest:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          properties:
+            type:
+              type: string
+              example: inventory
+            attributes:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: integer
+                  format: int64
+                  example: 100
+
+    InventoryResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: inventory
+            id:
+              type: string
+              example: "123"
+            attributes:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  format: int64
+                  example: 100
+
+    PurchaseRequest:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - type
+            - attributes
+          properties:
+            type:
+              type: string
+              example: purchases
+            attributes:
+              type: object
+              required:
+                - productId
+                - quantity
+              properties:
+                productId:
+                  type: integer
+                  format: int64
+                  example: 123
+                quantity:
+                  type: integer
+                  format: int64
+                  example: 2
+
+    PurchaseResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            type:
+              type: string
+              example: purchases
+            id:
+              type: string
+              example: "venta-123-1648245782000"
+            attributes:
+              type: object
+              properties:
+                productName:
+                  type: string
+                  example: "iPhone 13"
+                unitPrice:
+                  type: number
+                  format: double
+                  example: 799.99
+                quantity:
+                  type: integer
+                  format: int64
+                  example: 2
+                total:
+                  type: number
+                  format: double
+                  example: 1599.98
+                purchasedAt:
+                  type: string
+                  format: date-time
+                  example: "2023-09-03T12:34:56.789Z"
