@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: inventory-service
+
+# Configuración común para todos los ambientes
+server:
+  shutdown: graceful
+  error:
+    include-message: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Configuración para comunicación entre microservicios
+services:
+  catalog:
+    url: ${CATALOG_SERVICE_URL:http://catalog-ms:8081}
+    api-key: ${CATALOG_API_KEY:changeme_in_production}
+
+# Configuración de resiliencia
+resilience4j:
+  retry:
+    instances:
+      productService:
+        maxAttempts: 3
+        waitDuration: 1s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+  circuitbreaker:
+    instances:
+      productService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s

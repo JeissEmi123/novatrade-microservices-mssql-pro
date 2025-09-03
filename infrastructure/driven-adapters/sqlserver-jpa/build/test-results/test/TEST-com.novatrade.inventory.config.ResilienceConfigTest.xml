@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.novatrade.inventory.config.ResilienceConfigTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-09-03T21:14:27.240Z" hostname="CASACAMARGO" time="5.424">
+  <properties/>
+  <testcase name="Debería crear configuración de CircuitBreaker con valores correctos" classname="com.novatrade.inventory.config.ResilienceConfigTest" time="0.228"/>
+  <testcase name="Debería crear RestTemplate exitosamente" classname="com.novatrade.inventory.config.ResilienceConfigTest" time="5.171"/>
+  <testcase name="Debería crear configuración de Retry con valores correctos" classname="com.novatrade.inventory.config.ResilienceConfigTest" time="0.019"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

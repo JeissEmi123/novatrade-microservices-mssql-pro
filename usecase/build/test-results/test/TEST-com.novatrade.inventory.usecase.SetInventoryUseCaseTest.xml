@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.novatrade.inventory.usecase.SetInventoryUseCaseTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-09-03T21:23:40.657Z" hostname="CASACAMARGO" time="6.323">
+  <properties/>
+  <testcase name="shouldSetInventoryWhenQuantityIsValid()" classname="com.novatrade.inventory.usecase.SetInventoryUseCaseTest" time="6.283"/>
+  <testcase name="shouldSetInventoryToZeroWhenQuantityIsZero()" classname="com.novatrade.inventory.usecase.SetInventoryUseCaseTest" time="0.011"/>
+  <testcase name="shouldThrowExceptionWhenQuantityIsNegative()" classname="com.novatrade.inventory.usecase.SetInventoryUseCaseTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

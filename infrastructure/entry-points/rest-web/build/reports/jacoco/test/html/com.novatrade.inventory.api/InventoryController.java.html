@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rest-web</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.inventory.api</a> &gt; <span class="el_source">InventoryController.java</span></div><h1>InventoryController.java</h1><pre class="source lang-java linenums">package com.novatrade.inventory.api;
+
+import com.novatrade.inventory.model.*;
+import com.novatrade.inventory.usecase.*;
+import com.novatrade.inventory.model.ports.IdempotencyPort;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping(value = &quot;/api/v1&quot;, produces = &quot;application/vnd.api+json&quot;)
+public class InventoryController {
+
+    private final GetInventoryUseCase get;
+    private final SetInventoryUseCase set;
+    private final PurchaseUseCase purchase;
+    private final IdempotencyPort idempotency;
+
+    public InventoryController(
+            GetInventoryUseCase g,
+            SetInventoryUseCase s,
+            PurchaseUseCase p,
+<span class="nc" id="L25">            IdempotencyPort idem) {</span>
+<span class="nc" id="L26">        this.get = g;</span>
+<span class="nc" id="L27">        this.set = s;</span>
+<span class="nc" id="L28">        this.purchase = p;</span>
+<span class="nc" id="L29">        this.idempotency = idem;</span>
+<span class="nc" id="L30">    }</span>
+
+    @GetMapping(&quot;/inventory/{productId}&quot;)
+    public JsonApi get(@PathVariable Long productId) {
+<span class="nc" id="L34">        var i = get.execute(productId);</span>
+<span class="nc" id="L35">        return JsonApi.of(Map.of(</span>
+                &quot;type&quot;, &quot;inventory&quot;,
+<span class="nc" id="L37">                &quot;id&quot;, String.valueOf(i.getProductId()),</span>
+<span class="nc" id="L38">                &quot;attributes&quot;, Map.of(&quot;quantity&quot;, i.getQuantity())</span>
+        ));
+    }
+
+<span class="nc" id="L42">    record PatchBody(Body data) {</span>
+<span class="nc" id="L43">        record Body(String type, Attributes attributes) {}</span>
+<span class="nc" id="L44">        record Attributes(Long quantity) {}</span>
+    }
+
+    @PatchMapping(value = &quot;/inventory/{productId}&quot;, consumes = &quot;application/vnd.api+json&quot;)
+    public JsonApi patch(@PathVariable Long productId, @RequestBody PatchBody body) {
+<span class="nc" id="L49">        var qty = body.data().attributes().quantity();</span>
+<span class="nc" id="L50">        var i = set.execute(productId, qty);</span>
+
+<span class="nc" id="L52">        return JsonApi.of(Map.of(</span>
+                &quot;type&quot;, &quot;inventory&quot;,
+<span class="nc" id="L54">                &quot;id&quot;, String.valueOf(i.getProductId()),</span>
+<span class="nc" id="L55">                &quot;attributes&quot;, Map.of(&quot;quantity&quot;, i.getQuantity())</span>
+        ));
+    }
+
+<span class="nc" id="L59">    record PurchaseBody(Body data) {</span>
+<span class="nc" id="L60">        record Body(String type, Attributes attributes) {}</span>
+<span class="nc" id="L61">        record Attributes(Long productId, Long quantity) {}</span>
+    }
+
+    @PostMapping(value = &quot;/purchases&quot;, consumes = &quot;application/vnd.api+json&quot;)
+    public ResponseEntity&lt;String&gt; purchase(
+            @RequestHeader(value = &quot;Idempotency-Key&quot;, required = false) String idemKey,
+            @RequestBody PurchaseBody body) {
+
+<span class="nc" id="L69">        var a = body.data().attributes();</span>
+
+<span class="nc bnc" id="L71" title="All 4 branches missed.">        if (idemKey != null &amp;&amp; !idemKey.isBlank()) {</span>
+<span class="nc" id="L72">            var cached = idempotency.findResponseByKey(idemKey);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">            if (cached.isPresent()) {</span>
+<span class="nc" id="L74">                return ResponseEntity.ok()</span>
+<span class="nc" id="L75">                        .contentType(MediaType.valueOf(&quot;application/vnd.api+json&quot;))</span>
+<span class="nc" id="L76">                        .body(cached.get());</span>
+            }
+        }
+
+<span class="nc" id="L80">        var r = purchase.execute(a.productId(), a.quantity(), idemKey);</span>
+
+<span class="nc" id="L82">        var mapper = com.fasterxml.jackson.databind.json.JsonMapper.builder().build();</span>
+<span class="nc" id="L83">        var rootNode = mapper.createObjectNode();</span>
+<span class="nc" id="L84">        var dataNode = rootNode.putObject(&quot;data&quot;);</span>
+<span class="nc" id="L85">        dataNode.put(&quot;type&quot;, &quot;purchases&quot;);</span>
+<span class="nc" id="L86">        dataNode.put(&quot;id&quot;, &quot;venta-&quot; + r.getProductId() + &quot;-&quot; + System.currentTimeMillis());</span>
+
+<span class="nc" id="L88">        var attributesNode = dataNode.putObject(&quot;attributes&quot;);</span>
+<span class="nc" id="L89">        attributesNode.put(&quot;productName&quot;, r.getProductName());</span>
+<span class="nc" id="L90">        attributesNode.put(&quot;unitPrice&quot;, r.getUnitPrice());</span>
+<span class="nc" id="L91">        attributesNode.put(&quot;quantity&quot;, r.getQuantity());</span>
+<span class="nc" id="L92">        attributesNode.put(&quot;total&quot;, r.getTotalPrice());  // Cambiado de getTotal() a getTotalPrice()</span>
+<span class="nc" id="L93">        attributesNode.put(&quot;purchasedAt&quot;, r.getPurchasedAt());</span>
+
+<span class="nc" id="L95">        var json = rootNode.toString();</span>
+
+<span class="nc bnc" id="L97" title="All 4 branches missed.">        if (idemKey != null &amp;&amp; !idemKey.isBlank()) {</span>
+<span class="nc" id="L98">            idempotency.saveResponse(idemKey, json);</span>
+        }
+
+<span class="nc" id="L101">        return ResponseEntity.ok()</span>
+<span class="nc" id="L102">                .contentType(MediaType.valueOf(&quot;application/vnd.api+json&quot;))</span>
+<span class="nc" id="L103">                .body(json);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

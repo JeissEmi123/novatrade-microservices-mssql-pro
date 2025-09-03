@@ -1,0 +1,1 @@
+package com.novatrade.inventory.api; public record JsonApi(Object data, java.util.Map<String,Object> meta){ public static JsonApi of(Object d){return new JsonApi(d,null);} }

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductsClientAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlserver-jpa</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.inventory.adapter.products</a> &gt; <span class="el_source">ProductsClientAdapter.java</span></div><h1>ProductsClientAdapter.java</h1><pre class="source lang-java linenums">package com.novatrade.inventory.adapter.products;
+
+import com.novatrade.inventory.model.ports.ProductsClientPort;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+import java.util.Map;
+
+@Component
+public class ProductsClientAdapter implements ProductsClientPort {
+
+    private final RestClient client;
+    private final String apiKey;
+
+    public ProductsClientAdapter(
+            @Value(&quot;${products.base-url:http://localhost:8081}&quot;) String baseUrl,
+<span class="nc" id="L21">            @Value(&quot;${products.api-key:}&quot;) String apiKey) {</span>
+<span class="nc" id="L22">        this.client = RestClient.builder()</span>
+<span class="nc" id="L23">                .baseUrl(baseUrl)</span>
+<span class="nc" id="L24">                .defaultHeader(HttpHeaders.ACCEPT, &quot;application/vnd.api+json&quot;)</span>
+<span class="nc" id="L25">                .build();</span>
+<span class="nc" id="L26">        this.apiKey = apiKey;</span>
+<span class="nc" id="L27">    }</span>
+
+    @Override
+    @CircuitBreaker(name = &quot;products&quot;)
+    @Retry(name = &quot;products&quot;)
+    public ProductDTO getProduct(Long id) {
+<span class="nc" id="L33">        var resp = client.get()</span>
+<span class="nc" id="L34">                .uri(&quot;/api/v1/products/{id}&quot;, id)</span>
+<span class="nc" id="L35">                .header(&quot;X-API-KEY&quot;, apiKey)</span>
+<span class="nc" id="L36">                .retrieve()</span>
+<span class="nc" id="L37">                .toEntity(Map.class);</span>
+
+<span class="nc bnc" id="L39" title="All 4 branches missed.">        if (!resp.getStatusCode().is2xxSuccessful() || resp.getBody() == null) {</span>
+<span class="nc" id="L40">            return null;</span>
+        }
+
+<span class="nc" id="L43">        var body = resp.getBody();</span>
+<span class="nc" id="L44">        var data = (Map&lt;?, ?&gt;) body.get(&quot;data&quot;);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (data == null) {</span>
+<span class="nc" id="L46">            return null;</span>
+        }
+
+<span class="nc" id="L49">        var attrs = (Map&lt;?, ?&gt;) data.get(&quot;attributes&quot;);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (attrs == null) {</span>
+<span class="nc" id="L51">            return null;</span>
+        }
+
+<span class="nc" id="L54">        return new ProductDTO(</span>
+<span class="nc" id="L55">                Long.valueOf((String) data.get(&quot;id&quot;)),</span>
+<span class="nc" id="L56">                (String) attrs.get(&quot;name&quot;),</span>
+<span class="nc" id="L57">                ((Number) attrs.get(&quot;price&quot;)).doubleValue());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

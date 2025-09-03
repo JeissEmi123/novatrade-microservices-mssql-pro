@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IdempotencyRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlserver-jpa</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.inventory.adapter.jpa</a> &gt; <span class="el_source">IdempotencyRepositoryAdapter.java</span></div><h1>IdempotencyRepositoryAdapter.java</h1><pre class="source lang-java linenums">package com.novatrade.inventory.adapter.jpa;
+
+import com.novatrade.inventory.model.ports.IdempotencyPort;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
+/**
+ * Adaptador para el repositorio de idempotencia
+ * Implementa el puerto de idempotencia definido en el dominio
+ */
+@Component
+public class IdempotencyRepositoryAdapter implements IdempotencyPort {
+
+    private final IdempotencyJpaRepository repository;
+
+    /**
+     * Constructor que recibe el repositorio JPA
+     *
+     * @param repository Repositorio JPA para acceso a datos
+     */
+<span class="nc" id="L22">    public IdempotencyRepositoryAdapter(IdempotencyJpaRepository repository) {</span>
+<span class="nc" id="L23">        this.repository = repository;</span>
+<span class="nc" id="L24">    }</span>
+
+    /**
+     * Busca una respuesta guardada por su clave de idempotencia
+     *
+     * @param key Clave de idempotencia
+     * @return Respuesta JSON opcional asociada a la clave
+     */
+    @Override
+    public Optional&lt;String&gt; findResponseByKey(String key) {
+<span class="nc" id="L34">        return repository.findById(key)</span>
+<span class="nc" id="L35">                .map(IdempotencyEntity::getResponseJson);</span>
+    }
+
+    /**
+     * Guarda una respuesta asociada a una clave de idempotencia
+     *
+     * @param key Clave de idempotencia
+     * @param responseJson Respuesta JSON a guardar
+     */
+    @Override
+    public void saveResponse(String key, String responseJson) {
+<span class="nc" id="L46">        IdempotencyEntity entity = new IdempotencyEntity(key, responseJson);</span>
+<span class="nc" id="L47">        repository.save(entity);</span>
+<span class="nc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

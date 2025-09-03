@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InventoryRepositoryAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlserver-jpa</a> &gt; <a href="index.source.html" class="el_package">com.novatrade.inventory.adapter.jpa</a> &gt; <span class="el_source">InventoryRepositoryAdapter.java</span></div><h1>InventoryRepositoryAdapter.java</h1><pre class="source lang-java linenums">package com.novatrade.inventory.adapter.jpa;
+
+import com.novatrade.inventory.model.Inventory;
+import com.novatrade.inventory.model.ports.InventoryRepositoryPort;
+import org.springframework.stereotype.Component;
+
+/**
+ * Adaptador para el repositorio de inventario
+ * Implementa el puerto de repositorio de inventario definido en el dominio
+ */
+@Component
+public class InventoryRepositoryAdapter implements InventoryRepositoryPort {
+
+    private final InventoryJpaRepository repository;
+
+    /**
+     * Constructor que recibe el repositorio JPA
+     *
+     * @param repository Repositorio JPA para acceso a datos de inventario
+     */
+<span class="nc" id="L21">    public InventoryRepositoryAdapter(InventoryJpaRepository repository) {</span>
+<span class="nc" id="L22">        this.repository = repository;</span>
+<span class="nc" id="L23">    }</span>
+
+    /**
+     * Convierte una entidad JPA a un objeto de dominio
+     *
+     * @param entity Entidad JPA de inventario
+     * @return Objeto de dominio Inventory
+     */
+    private Inventory toDomain(InventoryEntity entity) {
+<span class="nc" id="L32">        return Inventory.builder()</span>
+<span class="nc" id="L33">                .productId(entity.getProductId())</span>
+<span class="nc" id="L34">                .quantity(entity.getQuantity())</span>
+<span class="nc" id="L35">                .build();</span>
+    }
+
+    /**
+     * Obtiene un registro de inventario por ID o crea uno nuevo si no existe
+     *
+     * @param productId ID del producto
+     * @return Objeto de dominio Inventory
+     */
+    @Override
+    public Inventory getOrCreate(Long productId) {
+<span class="nc" id="L46">        InventoryEntity entity = repository.findById(productId).orElseGet(() -&gt; {</span>
+<span class="nc" id="L47">            InventoryEntity newEntity = new InventoryEntity();</span>
+<span class="nc" id="L48">            newEntity.setProductId(productId);</span>
+<span class="nc" id="L49">            newEntity.setQuantity(0L);</span>
+<span class="nc" id="L50">            return repository.save(newEntity);</span>
+        });
+<span class="nc" id="L52">        return toDomain(entity);</span>
+    }
+
+    /**
+     * Establece la cantidad en inventario para un producto específico
+     *
+     * @param productId ID del producto
+     * @param quantity Nueva cantidad a establecer
+     * @return Objeto de dominio Inventory actualizado
+     */
+    @Override
+    public Inventory set(Long productId, Long quantity) {
+<span class="nc" id="L64">        InventoryEntity entity = new InventoryEntity();</span>
+<span class="nc" id="L65">        entity.setProductId(productId);</span>
+<span class="nc" id="L66">        entity.setQuantity(quantity);</span>
+<span class="nc" id="L67">        return toDomain(repository.save(entity));</span>
+    }
+
+    /**
+     * Decrementa la cantidad de un producto si hay suficiente stock
+     *
+     * @param productId ID del producto
+     * @param quantity Cantidad a decrementar
+     * @return true si se pudo decrementar, false si no hay suficiente stock
+     */
+    @Override
+    public boolean decrementIfEnough(Long productId, Long quantity) {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        return repository.decrementIfEnough(productId, quantity) &gt; 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
