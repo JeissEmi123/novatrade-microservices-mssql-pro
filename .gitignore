@@ -1,49 +1,33 @@
-# Archivos compilados y directorios de construcción
+# Archivos compilados
 *.class
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
 
-# Directorios específicos de construcción
-/build/
-*/build/
-*/*/build/
-*/*/*/build/
+# Archivos de log
+*.log
 
-# Directorios de Gradle
+# Directorios de compilación de Gradle
 .gradle/
-*/gradle/
-*/*/gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 
-# Configuración de IntelliJ IDEA
+# Archivos de IDE
 .idea/
-*.iws
 *.iml
 *.ipr
-out/
-
-# Configuración de Eclipse
+*.iws
 .settings/
 .project
 .classpath
-bin/
-
-# Configuración de VS Code
 .vscode/
 
-# Logs
-logs/
-*.log
+# Archivos temporales
+*.tmp
+*.temp
 
-# Archivos de sistema operativo
+# Archivos específicos del sistema operativo
 .DS_Store
 Thumbs.db
 
-# Archivos específicos de SQL Server
-*.mdf
-*.ldf
-
-# Archivos temporales
+# Archivos de configuración local que puedan contener información sensible
+application-local.properties
+application-local.yml
